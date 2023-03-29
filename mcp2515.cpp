@@ -12,7 +12,7 @@ const struct MCP2515::RXBn_REGS MCP2515::RXB[N_RXBUFFERS] = {
     {MCP_RXB1CTRL, MCP_RXB1SIDH, MCP_RXB1DATA, CANINTF_RX1IF}
 };
 
-MCP2515::MCP2515(const uint8_t _CS, const uint32_t _SPI_CLOCK, SPIClass * _SPI)
+MCP2515::MCP2515(const uint8_t _CS, const uint32_t _SPI_CLOCK, tinySPI * _SPI)
 {
     if (_SPI != nullptr) {
         SPIn = _SPI;
@@ -29,13 +29,14 @@ MCP2515::MCP2515(const uint8_t _CS, const uint32_t _SPI_CLOCK, SPIClass * _SPI)
 }
 
 void MCP2515::startSPI() {
-    SPIn->beginTransaction(SPISettings(SPI_CLOCK, MSBFIRST, SPI_MODE0));
+    // SPIn->beginTransaction(SPISettings(SPI_CLOCK, MSBFIRST, SPI_MODE0));
+    SPIn->setDataMode(SPI_MODE0);
     digitalWrite(SPICS, LOW);
 }
 
 void MCP2515::endSPI() {
     digitalWrite(SPICS, HIGH);
-    SPIn->endTransaction();
+    //SPIn->endTransaction();
 }
 
 MCP2515::ERROR MCP2515::reset(void)
@@ -356,13 +357,7 @@ MCP2515::ERROR MCP2515::setBitrate(const CAN_SPEED canSpeed, CAN_CLOCK canClock)
             cfg1 = MCP_16MHz_83k3BPS_CFG1;
             cfg2 = MCP_16MHz_83k3BPS_CFG2;
             cfg3 = MCP_16MHz_83k3BPS_CFG3;
-            break;
-
-            case (CAN_95KBPS):                                              //  95Kbps
-            cfg1 = MCP_16MHz_95kBPS_CFG1;
-            cfg2 = MCP_16MHz_95kBPS_CFG2;
-            cfg3 = MCP_16MHz_95kBPS_CFG3;
-            break;
+            break; 
 
             case (CAN_100KBPS):                                             // 100Kbps
             cfg1 = MCP_16MHz_100kBPS_CFG1;
